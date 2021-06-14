@@ -1,0 +1,14 @@
+#!/bin/bash
+
+docker build -t vahiwe/twitteranalysis \
+--build-arg AWS_ACCESS_KEY_ID_ARG=${AWS_ACCESS_KEY_ID} \
+--build-arg AWS_SECRET_ACCESS_KEY_ARG=${AWS_SECRET_ACCESS_KEY} \
+--build-arg AWS_STORAGE_BUCKET_NAME_ARG=${AWS_STORAGE_BUCKET_NAME} \
+--build-arg DEBUG_VALUE_ARG=${DEBUG_VALUE} \
+--build-arg DJANGO_KEY_ARG=${DJANGO_KEY} \
+--build-arg TWITTER_CONSUMER_KEY_ARG=${TWITTER_CONSUMER_KEY} \
+--build-arg TWITTER_CONSUMER_SECRET_ARG=${TWITTER_CONSUMER_SECRET} \
+--build-arg TWITTER_ACCESS_TOKEN_ARG=${TWITTER_ACCESS_TOKEN} \
+--build-arg TWITTER_ACCESS_SECRET_ARG=${TWITTER_ACCESS_SECRET} .
+
+echo "Image built successfully"
