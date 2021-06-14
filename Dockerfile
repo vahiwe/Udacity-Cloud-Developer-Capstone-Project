@@ -46,6 +46,12 @@ WORKDIR /TwitterAnalysis
 # Install spacy language model
 RUN python -m spacy download en
 
+# Run to create migrations for changes
+RUN python manage.py makemigrations
+
+# Run to apply those changes to the database
+RUN python manage.py migrate
+
 # expose the port 8000
 EXPOSE 8000
 
