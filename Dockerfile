@@ -49,6 +49,9 @@ RUN python -m spacy download en
 # Run to create migrations for changes
 RUN python manage.py makemigrations
 
+# Run to create migrations for changes in setiment app
+RUN python manage.py makemigrations sentiment
+
 # Run to apply those changes to the database
 RUN python manage.py migrate
 

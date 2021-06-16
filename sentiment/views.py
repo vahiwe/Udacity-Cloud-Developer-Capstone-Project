@@ -8,8 +8,10 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sentiment.config import *
+from annoying.functions import get_object_or_None
 from sklearn.externals import joblib
 from django.shortcuts import render,  redirect
+from sentiment.models import Feedbacks, Tweets
 from django.core.files.storage import default_storage
 from io import BytesIO
 
@@ -87,10 +89,11 @@ def analysis(request):
         test = []
         likes = []
         retweets = []
+        bulk_object_create = []
         for tweet in tweets:
             if tweet.created_at < date_after_obj and tweet.created_at > date_since_obj:
-                date = tweet.created_at
-                date = date.strftime("%Y-%m-%d")
+                full_date = tweet.created_at
+                date = full_date.strftime("%Y-%m-%d")
                 like = tweet.favorite_count
                 retweet = tweet.retweet_count
                 status = tweet
@@ -104,10 +107,21 @@ def analysis(request):
                     like = status._json["retweeted_status"]["favorite_count"]
                 else:
                     status_json = status._json['full_text']
-                test.append(status_json.translate(non_bmp_map))
+                cleaned_tweet = status_json.translate(non_bmp_map) 
+                test.append(cleaned_tweet)
                 likes.append(like)
                 retweets.append(retweet)
                 dates.append(date)
+                db_tweet = get_object_or_None(Tweets, tweet=cleaned_tweet, twitter_handle=handle, tweet_date=full_date)
+                if db_tweet is None:
+                    bulk_object_create.append(Tweets(
+                        tweet=cleaned_tweet, 
+                        likes=like, 
+                        retweets=retweet,
+                        twitter_handle=handle,
+                        tweet_date=full_date
+                    ))
+
 
         df = pd.DataFrame(list(zip(test, dates, likes, retweets)), columns=[
                           "tweets", "dates", "likes", "retweets"])
@@ -125,6 +139,10 @@ def analysis(request):
             report = "Sorry you don't have enough tweets within this period"
             return render(request, 'analysis.html', {'report': report, 'user': handle})
 
+        # Save tweets to db
+        if len(bulk_object_create) > 0:
+            Tweets.objects.bulk_create(bulk_object_create)  
+        
         # remove twitter handles (@user)
         df['tidy_tweet'] = np.vectorize(remove_pattern)(df['tweets'], "@[\w]*")
         # remove url patterns
@@ -237,10 +255,17 @@ def feedback(request):
         handle = request.POST['handle']
         handle = str(handle)
         message = request.POST['message']
-        message = handle + "," + str(message)
-        feedback = open("feedback.txt", "a+")
-        feedback.write(message+"\n\n")
-        feedback.close()
+        # Save feedback to DB
+        Feedbacks.objects.create(
+            feedback=message,
+            twitter_handle=handle
+        )
+
+        # writing feedback to file
+        # message = handle + "," + str(message)
+        # feedback = open("feedback.txt", "a+")
+        # feedback.write(message+"\n\n")
+        # feedback.close()
         return redirect('/')
     piechart = request.session.get('pie')
     dailygraph = request.session.get('daily')

@@ -22,6 +22,9 @@ setup(
         'gunicorn == 19.9.0',
         'python-decouple == 3.4',
         'boto3 == 1.17.93',
-        'django-storages == 1.11.1'
+        'django-storages == 1.11.1',
+        'dj-database-url == 0.5.0',
+        'psycopg2 == 2.9',
+        'django-annoying == 0.10.6'
     ]
 )
