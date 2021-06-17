@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twitter-analysis
+  labels:
+    app: twitter-analysis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: twitter-analysis
+  template:
+    metadata:
+      labels:
+        app: twitter-analysis
+    spec:
+      containers:
+      - name: twitter-analysis
+        image: vahiwe/twitteranalysis
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 60
