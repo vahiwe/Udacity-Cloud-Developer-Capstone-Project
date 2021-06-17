@@ -7,17 +7,33 @@ services:
 
 # Pre-testing installs
 install:
-  - echo "nothing needs to be installed"
-
+  # Install kubectl
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl
+  - sudo mv ./kubectl /usr/local/bin/kubectl
+  # Install AWS CLI
+  - if ! [ -x "$(command -v aws)" ]; then curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" ; unzip awscliv2.zip ; sudo ./aws/install ; fi
+  # export environment variables for AWS CLI (using Travis environment variables)
+  - export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_TRAVIS}
+  - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY_TRAVIS}
+  - export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+  # Setup kubectl config to use the desired AWS EKS cluster
+  - aws eks update-kubeconfig --region ${AWS_DEFAULT_REGION} --name ${AWS_EKS_CLUSTER_NAME}
+  
 # Scripts to be run such as tests
 before_script:
-  - echo "no tests"
+  - docker --version # print the version for logging
+  - kubectl version --client
+  - aws --version
 
 script:
-  - docker --version # print the version for logging
-  # - ./build_images.sh
+  - ./build_images.sh
+  - ./update_deployed_version.sh
 
 after_success:
   - docker images
-  # - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  # - docker push vahiwe/twitteranalysis
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push vahiwe/twitteranalysis:$TRAVIS_BUILD_NUMBER
+  - docker push vahiwe/simple-reverse-proxy:$TRAVIS_BUILD_NUMBER
+  - kubectl apply -f ./K8s
+  - echo "Deployment Complete"

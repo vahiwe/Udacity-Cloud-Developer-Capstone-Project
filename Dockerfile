@@ -16,6 +16,7 @@ ARG TWITTER_CONSUMER_KEY_ARG
 ARG TWITTER_CONSUMER_SECRET_ARG
 ARG TWITTER_ACCESS_TOKEN_ARG
 ARG TWITTER_ACCESS_SECRET_ARG
+ARG DATABASE_URL_ARG
 
 # Set Environment Variable
 ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID_ARG}
@@ -27,6 +28,7 @@ ENV TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY_ARG}
 ENV TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET_ARG}
 ENV TWITTER_ACCESS_TOKEN=${TWITTER_ACCESS_TOKEN_ARG}
 ENV TWITTER_ACCESS_SECRET=${TWITTER_ACCESS_SECRET_ARG}
+ENV DATABASE_URL=${DATABASE_URL_ARG}
 
 # create root directory for our project in the container
 RUN mkdir /TwitterAnalysis
@@ -47,16 +49,16 @@ WORKDIR /TwitterAnalysis
 RUN python -m spacy download en
 
 # Run to create migrations for changes
-RUN python manage.py makemigrations
+# RUN python manage.py makemigrations
 
 # Run to create migrations for changes in setiment app
-RUN python manage.py makemigrations sentiment
+# RUN python manage.py makemigrations sentiment
 
 # Run to apply those changes to the database
-RUN python manage.py migrate
+# RUN python manage.py migrate
 
-# expose the port 8000
-EXPOSE 8000
+# expose the port 80
+EXPOSE 80
 
 # define the default command to run when starting the container using Django
 # Uncomment the next two lines to use django to render app and comment gunicorn command
@@ -64,4 +66,4 @@ EXPOSE 8000
 # CMD ["runserver", "0.0.0.0:8000"]
 
 # define the default command to run when starting the container using gunicorn
-CMD ["gunicorn", "--bind", ":8000", "TwitterAnalysis.wsgi:application"]
+CMD ["gunicorn", "--bind", ":80", "TwitterAnalysis.wsgi:application"]
