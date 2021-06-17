@@ -6,9 +6,12 @@ docker build -t vahiwe/twitteranalysis \
 --build-arg AWS_STORAGE_BUCKET_NAME_ARG=${AWS_STORAGE_BUCKET_NAME} \
 --build-arg DEBUG_VALUE_ARG=${DEBUG_VALUE} \
 --build-arg DJANGO_KEY_ARG=${DJANGO_KEY} \
+--build-arg DATABASE_URL_ARG=${DATABASE_URL} \
 --build-arg TWITTER_CONSUMER_KEY_ARG=${TWITTER_CONSUMER_KEY} \
 --build-arg TWITTER_CONSUMER_SECRET_ARG=${TWITTER_CONSUMER_SECRET} \
 --build-arg TWITTER_ACCESS_TOKEN_ARG=${TWITTER_ACCESS_TOKEN} \
 --build-arg TWITTER_ACCESS_SECRET_ARG=${TWITTER_ACCESS_SECRET} .
+
+docker build -t vahiwe/simple-reverse-proxy -f ./reverse-proxy/Dockerfile ./reverse-proxy/
 
 echo "Image built successfully"
