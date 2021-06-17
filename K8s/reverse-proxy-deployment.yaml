@@ -16,7 +16,7 @@ spec:
         service: reverseproxy
     spec:
       containers:
-      - image: vahiwe/simple-reverse-proxy
+      - image: vahiwe/simple-reverse-proxy:VERSION
         imagePullPolicy: Always
         name: reverseproxy
         ports:

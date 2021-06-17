@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: twitter-analysis
-        image: vahiwe/twitteranalysis
+        image: vahiwe/twitteranalysis:VERSION
         imagePullPolicy: Always
         resources:
           limits:
