@@ -30,7 +30,7 @@ Please view the aforementioned scripts before running to understand the logic be
 
 **1)** Fire up your favourite console & clone this repo somewhere:
 
-__`❍ git clone https://github.com/vahiwe/TwitterAnalysis.git`__
+__`❍ git clone https://github.com/vahiwe/Udacity-Cloud-Developer-Capstone-Project.git`__
 
 **2)** Enter this directory:
 
